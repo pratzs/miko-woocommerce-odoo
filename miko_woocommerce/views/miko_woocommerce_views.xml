@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_channel_form_woo" model="ir.ui.view">
+        <field name="name">miko.ecommerce.channel.form.woocommerce</field>
+        <field name="model">miko.ecommerce.channel</field>
+        <field name="inherit_id" ref="miko_ecommerce_core.view_channel_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="action_test_connection" type="object"
+                            string="Test Connection" class="btn-primary"/>
+                    <button name="action_sync_now" type="object" string="Sync Now"/>
+                    <span class="mx-2 text-muted">Pull</span>
+                    <button name="action_import_products" type="object" string="Products"/>
+                    <button name="action_import_customers" type="object" string="Customers"/>
+                    <button name="action_import_orders" type="object" string="Orders"/>
+                    <span class="mx-2 text-muted">Push</span>
+                    <button name="action_export_products" type="object" string="Products"/>
+                    <button name="action_export_customers" type="object" string="Customers"/>
+                    <button name="action_export_stock" type="object" string="Stock"/>
+                </header>
+            </xpath>
+
+            <xpath expr="//sheet" position="inside">
+                <notebook>
+                    <page string="WooCommerce" name="woo">
+                        <group>
+                            <group string="Connection">
+                                <field name="woo_url" placeholder="https://example.com"/>
+                                <field name="woo_key" password="True"/>
+                                <field name="woo_secret" password="True"/>
+                            </group>
+                            <group string="Status">
+                                <field name="connection_state"/>
+                                <field name="woo_version"/>
+                                <field name="woo_wp_version"/>
+                                <field name="connection_message"/>
+                            </group>
+                        </group>
+                        <group string="How imports behave">
+                            <field name="create_missing_products"/>
+                            <field name="unmapped_tax_policy"/>
+                            <field name="woo_import_statuses"/>
+                        </group>
+                        <div class="text-muted">
+                            Create the key in WooCommerce under Settings, Advanced,
+                            REST API, with Read/Write permission. The address is the
+                            site root, and it must be https: the key and secret are
+                            sent with every request.
+                        </div>
+                    </page>
+
+                    <page string="Directions" name="woo_directions">
+                        <div class="text-muted mb-2">
+                            Which way each kind of record travels. Orders are always
+                            WooCommerce to Odoo, because that is where they are
+                            placed. A push in the wrong direction is refused rather
+                            than done quietly.
+                        </div>
+                        <group>
+                            <field name="product_direction"/>
+                            <field name="customer_direction"/>
+                        </group>
+                    </page>
+
+                    <page string="Scheduled sync" name="woo_sync">
+                        <div class="text-muted mb-2">
+                            Nothing runs on a schedule until this is switched on. The
+                            scheduler wakes every 15 minutes and skips stores that
+                            are not due yet.
+                        </div>
+                        <group>
+                            <group string="When">
+                                <field name="auto_sync"/>
+                                <field name="sync_interval_minutes"/>
+                                <field name="last_sync"/>
+                                <field name="sync_running"/>
+                            </group>
+                            <group string="What">
+                                <field name="sync_orders"/>
+                                <field name="sync_products"/>
+                                <field name="sync_customers"/>
+                            </group>
+                        </group>
+                        <field name="last_sync_message" readonly="1"/>
+                    </page>
+
+                    <page string="Stock and status" name="woo_out">
+                        <div class="text-muted mb-2">
+                            Both of these write into the live shop, so both start
+                            switched off.
+                        </div>
+                        <group>
+                            <group string="Stock to WooCommerce">
+                                <field name="export_stock"/>
+                                <field name="stock_source"/>
+                            </group>
+                            <group string="Order status">
+                                <field name="export_fulfilments"/>
+                                <field name="woo_completed_status"/>
+                                <field name="woo_tracking_meta_key"/>
+                            </group>
+                        </group>
+                        <div class="text-muted">
+                            WooCommerce has no fulfilment record: an order is marked
+                            shipped by moving its status. Tracking numbers are not a
+                            core field either, so the meta key your shipping plugin
+                            reads has to be named above. Left empty, the status still
+                            moves and no tracking is written.
+                        </div>
+                    </page>
+
+                    <page string="Taxes" name="woo_taxes">
+                        <div class="text-muted mb-2">
+                            Every tax WooCommerce sends is listed here the first time
+                            it is seen. A row with no Odoo tax set will stop imports
+                            rather than produce an invoice missing that tax.
+                        </div>
+                        <field name="store_tax_ids" nolabel="1">
+                            <list editable="bottom">
+                                <field name="title" readonly="1"/>
+                                <field name="rate_percent" readonly="1"/>
+                                <field name="tax_id"/>
+                                <field name="order_count" readonly="1"/>
+                            </list>
+                        </field>
+                    </page>
+
+                    <page string="Field mapping" name="woo_fields">
+                        <div class="text-muted mb-2">
+                            Which WooCommerce field lands in which Odoo field.
+                            Identity fields are deliberately absent: repointing those
+                            would break duplicate prevention, which everything else
+                            rests on.
+                        </div>
+                        <button name="action_seed_field_maps" type="object"
+                                string="Load default mappings" class="btn-secondary mb-2"/>
+                        <field name="field_map_ids" nolabel="1">
+                            <list editable="bottom">
+                                <field name="entity"/>
+                                <field name="direction"/>
+                                <field name="shopify_field" string="Store field"/>
+                                <field name="odoo_field"/>
+                                <field name="active" widget="boolean_toggle"/>
+                            </list>
+                        </field>
+                    </page>
+                </notebook>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_order_list_woo" model="ir.ui.view">
+        <field name="name">sale.order.list.woocommerce</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="woo_order_number" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
