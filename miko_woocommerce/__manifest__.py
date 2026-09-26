@@ -21,7 +21,7 @@ WooCommerce actually charged, leaving anything that disagrees as a quotation wit
 the difference spelled out.
 """,
     'author': 'Tripster Developers',
-    'website': 'https://tripsterdevelopers.com/odoo/',
+    'website': 'https://miko.co.nz/odoo/woocommerce-connector',
     'category': 'eCommerce',
     'license': 'OPL-1',
     'depends': ['miko_ecommerce_core', 'sale_management', 'stock', 'account'],
