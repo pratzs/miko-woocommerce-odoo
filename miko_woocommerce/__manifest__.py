@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'WooCommerce Odoo Connector: Orders, Stock, Products (Miko)',
-    'version': '18.0.1.0.0',
-    'summary': 'Two-way WooCommerce Odoo sync on a schedule: import orders, '
-               'products and customers, publish stock and order status',
+    'name': '2-Way WooCommerce Odoo Connector: Orders, Stock, Products (Miko)',
+    'version': '18.0.1.0.1',
+    'summary': 'Two-way WooCommerce Odoo connector (Odoo WooCommerce connector) for WooCommerce integration and scheduled WooCommerce sync: import orders, products and customers, publish stock and order status',
     'description': """
 Connect a WooCommerce store to Odoo and keep both sides in step, on a schedule.
 
